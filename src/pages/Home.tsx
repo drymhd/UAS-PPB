@@ -1,32 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  IonApp,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonTextarea,
-  IonDatetime,
-  IonIcon,
-  useIonViewWillEnter,
-  IonModal,
-  IonSelect,
-  IonSelectOption,
-  IonImg,
-  IonToast,
-  IonItemSliding,
-  IonItemOption,
-  IonItemOptions,
-} from '@ionic/react';
+import { IonApp, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonDatetime, IonIcon, IonModal, IonSelect, IonSelectOption, IonImg, IonToast, IonItemSliding, IonItemOption, IonItemOptions } from '@ionic/react';
 import { addOutline, trashOutline, pencilOutline, cameraOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { useHistory } from 'react-router-dom';
 
 type Task = {
   id?: number;
@@ -38,11 +16,12 @@ type Task = {
   image?: string;
 };
 
-const App: React.FC = () => {
+const Home: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [currentTask, setCurrentTask] = useState<Task>({ title: '', description: '', deadline: '', priority: 'Medium', completed: false });
   const [toastMessage, setToastMessage] = useState<string>('');
+  const history = useHistory(); // For navigation
 
   useEffect(() => {
     loadTasks();
@@ -113,6 +92,10 @@ const App: React.FC = () => {
     setModalOpen(true);
   };
 
+  const handleTaskClick = (task: Task): void => {
+    history.push(`/task/${task.id}`);
+  };
+
   return (
     <IonApp>
       <IonHeader>
@@ -129,7 +112,11 @@ const App: React.FC = () => {
         <IonList>
           {tasks.map((task) => (
             <IonItemSliding key={task.id} style={{ borderRadius: '12px', overflow: 'hidden' }}>
-              <IonItem style={{ borderRadius: '12px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+              <IonItem
+                style={{ borderRadius: '12px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}
+                button
+                onClick={() => handleTaskClick(task)} // Task item click opens task details
+              >
                 <IonLabel>
                   <h2>{task.title}</h2>
                   <p>Deadline: {task.deadline}</p>
@@ -222,4 +209,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Home;
